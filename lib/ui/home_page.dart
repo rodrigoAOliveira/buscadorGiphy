@@ -12,18 +12,6 @@ class _HomePageState extends State<HomePage> {
   String _search;
   int OffSet = 0;
 
-  Future<Map> _getGifs() async {
-    http.Response response;
-    if (_search == null)
-      response = await http.get(
-          "https://api.giphy.com/v1/gifs/random?api_key=TjSkK2KwpOwNfZ5zdBfUXvR5Eohcs5qQ&tag=dogs&rating=G");
-    else
-      response = await http.get(
-          "https://api.giphy.com/v1/gifs/search?api_key=TjSkK2KwpOwNfZ5zdBfUXvR5Eohcs5qQ&q=$_search&limit=20&offset=$OffSet&rating=G&lang=en");
-
-    return json.decode(response.body);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,7 +56,7 @@ class _HomePageState extends State<HomePage> {
                     if (snapshot.hasError)
                       return Container();
                     else
-                      _createGifTable(context, snapshot);
+                      return _createGifTable(context, snapshot);
                 }
               },
             ),
@@ -78,7 +66,32 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _createGifTable(context, snapshot) {
+  Widget _createGifTable(context, AsyncSnapshot snapshot) {
+    return GridView.builder(
+        padding: EdgeInsets.all(10.0),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, crossAxisSpacing: 10.0, mainAxisSpacing: 10.0),
+        itemCount: snapshot.data["data"].length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            child: Image.network(
+            snapshot.data["data"][index]["images"]["fixed_height"]["url"],
+              height: 300.0,
+              fit: BoxFit.cover,
+            ),
+          );
+        });
+  }
 
+  Future<Map> _getGifs() async {
+    http.Response response;
+    if (_search == null)
+      response = await http.get(
+          "https://api.giphy.com/v1/gifs/trending?api_key=TjSkK2KwpOwNfZ5zdBfUXvR5Eohcs5qQ&limit=25&rating=G");
+    else
+      response = await http.get(
+          "https://api.giphy.com/v1/gifs/search?api_key=TjSkK2KwpOwNfZ5zdBfUXvR5Eohcs5qQ&q=$_search&limit=20&offset=$OffSet&rating=G&lang=en");
+
+    return json.decode(response.body);
   }
 }

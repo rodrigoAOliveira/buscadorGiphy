@@ -5,6 +5,6 @@ import 'package:buscador_giphy/ui/home_page.dart';
 void main() {
   runApp(MaterialApp(
       home: HomePage(),
-    theme: ThemeData(hintColor: Colors.white),
+    theme: ThemeData(primaryColor: Colors.white),
   ));
 }
